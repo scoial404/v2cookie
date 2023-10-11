@@ -13,7 +13,7 @@ exports.run = async (client, message, args) => {
     }
   ];
 
-  const other = [
+  const otherCommands = [
     {
       name: 'dm <user> <message>',
       description: 'שולח לאיש הודעה בפרטי דרך הבוט'
