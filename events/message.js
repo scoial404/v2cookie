@@ -1,7 +1,6 @@
 const config = require('../config.json');
 const Discord = require('discord.js');
 const db = require('quick.db');
-import chalk from 'chalk';
 
 module.exports = async (client, message) => {
     let prefix = config.prefix;
