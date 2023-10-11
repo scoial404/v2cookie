@@ -1,36 +1,21 @@
-const config = require('../config.json');
-const Discord = require('discord.js');
-const db = require('quick.db');
-
-module.exports = async (client, message) => {
-    let prefix = config.prefix;
-    try {
-        if (message.author.bot || message.channel.type === "dm") return;
-
-        if ((message.content === `<@${client.user.id}>`) || (message.content === `<@!${client.user.id}>`)) {
-            message.channel.send(`My Prefix is ${config.prefix}`);
-        }
-
-        if (!message.content.startsWith(prefix)) return;
-
-        let timeout = 60 * 1000;
-        let myDaily = await db.get(`timeout`);
-
-        if (!db.has(`${message.guild.id}.${message.author.id}.messageCount`)) {
-            db.set(`${message.guild.id}.${message.author.id}.messageCount`, 1);
-        } else {
-            db.add(`${message.guild.id}.${message.author.id}.messageCount`, 1);
-        }
-
-        const args = message.content.slice(prefix.length).trim().split(/ +/g);
-        const command = args.shift().toLowerCase();
-
-        const cmd = client.commands.get(command) || client.commands.get(client.aliases.get(command));
-        
-        if (cmd) {
-            cmd.execute(client, message, args);
-        }
-    } catch (error) {
-        console.log(error);
-    }
+module.exports = (client, message) => {
+    // Ignore all bots
+    if (message.author.bot) return;
+  
+    // Ignore messages not starting with the prefix (in config.json)
+    const cmdPrefixes = message.content.startsWith(client.config.prefix);
+    if (!cmdPrefixes) return;
+  
+    // Our standard argument/command name definition.
+    const args = message.content.slice(client.config.prefix.length).trim().split(/ +/g);
+    const command = args.shift().toLowerCase();
+  
+    // Grab the command data from the client.commands Enmap
+    const cmd = client.commands.get(command);
+  
+    // If that command doesn't exist, silently exit and do nothing
+    if (!cmd) return;
+  
+    // Run the command
+    cmd.run(client, message, args);
 };
